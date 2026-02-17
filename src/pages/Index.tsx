@@ -3,7 +3,6 @@ import { motion } from "framer-motion";
 import { BarChart3, Target, MapPin, Calendar } from "lucide-react";
 import { lyonData, KPI_DEFINITIONS, OKR_DEFINITIONS } from "@/data/kpiData";
 import KPICard from "@/components/dashboard/KPICard";
-import KPIBarChart from "@/components/dashboard/KPIBarChart";
 import OKRCard from "@/components/dashboard/OKRCard";
 import KPIDetailModal from "@/components/dashboard/KPIDetailModal";
 import OKRDetailModal from "@/components/dashboard/OKRDetailModal";
@@ -86,10 +85,21 @@ const Index = () => {
               <HeatmapChart />
             </div>
 
-            {/* KPIs as Bar Charts */}
+            {/* Quick KPIs */}
             <div>
               <h3 className="font-display font-semibold text-lg mb-4">Indicateurs de Performance Opérationnels</h3>
-              <KPIBarChart />
+              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                {KPI_DEFINITIONS.slice(0, 6).map((kpi, i) => (
+                  <KPICard
+                    key={kpi.id}
+                    kpi={kpi}
+                    data={latestData}
+                    previousData={previousData}
+                    onClick={() => setSelectedKPI(kpi)}
+                    index={i}
+                  />
+                ))}
+              </div>
             </div>
 
             {/* Quick OKRs */}
