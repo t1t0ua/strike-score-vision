@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { BarChart3, Target, MapPin, Calendar } from "lucide-react";
-import { lyonData, KPI_DEFINITIONS, OKR_DEFINITIONS } from "@/data/kpiData";
+import { BarChart3, Target, MapPin, Calendar, ChevronDown } from "lucide-react";
+import { KPI_DEFINITIONS, OKR_DEFINITIONS, SITES } from "@/data/kpiData";
+import type { KPIDefinition, OKRDefinition, SiteId } from "@/data/kpiData";
 import KPICard from "@/components/dashboard/KPICard";
 import OKRCard from "@/components/dashboard/OKRCard";
 import KPIDetailModal from "@/components/dashboard/KPIDetailModal";
@@ -9,7 +10,11 @@ import OKRDetailModal from "@/components/dashboard/OKRDetailModal";
 import SummaryCards from "@/components/dashboard/SummaryCards";
 import CABreakdownChart from "@/components/dashboard/CABreakdownChart";
 import HeatmapChart from "@/components/dashboard/HeatmapChart";
-import type { KPIDefinition, OKRDefinition } from "@/data/kpiData";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 
 type Section = "overview" | "kpis" | "okrs";
 
@@ -23,9 +28,13 @@ const Index = () => {
   const [section, setSection] = useState<Section>("overview");
   const [selectedKPI, setSelectedKPI] = useState<KPIDefinition | null>(null);
   const [selectedOKR, setSelectedOKR] = useState<OKRDefinition | null>(null);
+  const [siteId, setSiteId] = useState<SiteId>("lyon");
+  const [siteMenuOpen, setSiteMenuOpen] = useState(false);
 
-  const latestData = lyonData[lyonData.length - 1];
-  const previousData = lyonData[lyonData.length - 2];
+  const site = SITES.find((s) => s.id === siteId)!;
+  const siteData = site.data;
+  const latestData = siteData[siteData.length - 1];
+  const previousData = siteData[siteData.length - 2];
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,12 +45,43 @@ const Index = () => {
             <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center">
               <span className="text-lg font-bold text-primary-foreground">B</span>
             </div>
-            <div>
-              <h1 className="font-display font-bold text-lg leading-tight">BowlingStar Lyon</h1>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <MapPin size={10} /> Tableau de Bord Stratégique
-              </p>
-            </div>
+            <Popover open={siteMenuOpen} onOpenChange={setSiteMenuOpen}>
+              <PopoverTrigger asChild>
+                <button className="flex items-center gap-2 group cursor-pointer text-left">
+                  <div>
+                    <h1 className="font-display font-bold text-lg leading-tight flex items-center gap-1.5">
+                      {site.label}
+                      <ChevronDown
+                        size={16}
+                        className="text-muted-foreground group-hover:text-primary transition-colors"
+                      />
+                    </h1>
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <MapPin size={10} /> Tableau de Bord Stratégique
+                    </p>
+                  </div>
+                </button>
+              </PopoverTrigger>
+              <PopoverContent align="start" className="w-56 p-1.5">
+                {SITES.map((s) => (
+                  <button
+                    key={s.id}
+                    onClick={() => {
+                      setSiteId(s.id);
+                      setSiteMenuOpen(false);
+                    }}
+                    className={`w-full text-left px-3 py-2.5 rounded-lg text-sm font-medium transition-all flex items-center gap-2 ${
+                      siteId === s.id
+                        ? "bg-primary/15 text-primary"
+                        : "text-foreground hover:bg-secondary"
+                    }`}
+                  >
+                    <MapPin size={14} className={siteId === s.id ? "text-primary" : "text-muted-foreground"} />
+                    {s.label}
+                  </button>
+                ))}
+              </PopoverContent>
+            </Popover>
           </div>
 
           {/* Navigation */}
@@ -68,20 +108,20 @@ const Index = () => {
         {/* Overview Section */}
         {section === "overview" && (
           <motion.div
-            key="overview"
+            key={`overview-${siteId}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="space-y-6"
           >
             <div>
               <h2 className="font-display font-bold text-2xl mb-1">Vue d'ensemble</h2>
-              <p className="text-sm text-muted-foreground">Synthèse des indicateurs clés — Décembre (dernières données)</p>
+              <p className="text-sm text-muted-foreground">Synthèse des indicateurs clés — {site.shortLabel} — Décembre (dernières données)</p>
             </div>
 
-            <SummaryCards />
+            <SummaryCards data={siteData} />
 
             <div className="grid lg:grid-cols-2 gap-6">
-              <CABreakdownChart />
+              <CABreakdownChart data={siteData} />
               <HeatmapChart />
             </div>
 
@@ -117,7 +157,7 @@ const Index = () => {
         {/* KPIs Section */}
         {section === "kpis" && (
           <motion.div
-            key="kpis"
+            key={`kpis-${siteId}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="space-y-6"
@@ -141,7 +181,7 @@ const Index = () => {
             </div>
 
             <div className="grid lg:grid-cols-2 gap-6">
-              <CABreakdownChart />
+              <CABreakdownChart data={siteData} />
               <HeatmapChart />
             </div>
           </motion.div>
@@ -150,7 +190,7 @@ const Index = () => {
         {/* OKRs Section */}
         {section === "okrs" && (
           <motion.div
-            key="okrs"
+            key={`okrs-${siteId}`}
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             className="space-y-6"
@@ -170,7 +210,7 @@ const Index = () => {
       </main>
 
       {/* Modals */}
-      <KPIDetailModal kpi={selectedKPI} open={!!selectedKPI} onClose={() => setSelectedKPI(null)} />
+      <KPIDetailModal kpi={selectedKPI} open={!!selectedKPI} onClose={() => setSelectedKPI(null)} data={siteData} />
       <OKRDetailModal okr={selectedOKR} open={!!selectedOKR} onClose={() => setSelectedOKR(null)} />
     </div>
   );

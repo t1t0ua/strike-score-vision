@@ -1,27 +1,27 @@
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { LineChart, Line, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend } from "recharts";
-import type { KPIDefinition } from "@/data/kpiData";
-import { lyonData, getCATotal } from "@/data/kpiData";
+import type { KPIDefinition, MonthlyData } from "@/data/kpiData";
+import { getCATotal } from "@/data/kpiData";
 
 interface KPIDetailModalProps {
   kpi: KPIDefinition | null;
   open: boolean;
   onClose: () => void;
+  data: MonthlyData[];
 }
 
-export default function KPIDetailModal({ kpi, open, onClose }: KPIDetailModalProps) {
+export default function KPIDetailModal({ kpi, open, onClose, data }: KPIDetailModalProps) {
   if (!kpi) return null;
 
-  const chartData = lyonData.map((d) => ({
+  const chartData = data.map((d) => ({
     mois: d.mois.substring(0, 3),
     valeur: kpi.getValue(d),
     target: kpi.target,
   }));
 
-  // For CA, show breakdown
   const isCA = kpi.id === "ca-jour";
   const caBreakdown = isCA
-    ? lyonData.map((d) => ({
+    ? data.map((d) => ({
         mois: d.mois.substring(0, 3),
         Bowling: d.caBowling,
         Consommations: d.caConso,
@@ -30,18 +30,17 @@ export default function KPIDetailModal({ kpi, open, onClose }: KPIDetailModalPro
       }))
     : [];
 
-  const latest = lyonData[lyonData.length - 1];
-  const previous = lyonData[lyonData.length - 2];
+  const latest = data[data.length - 1];
+  const previous = data[data.length - 2];
   const currentVal = kpi.getValue(latest);
   const prevVal = kpi.getValue(previous);
   const trend = ((currentVal - prevVal) / prevVal) * 100;
 
-  // Insights
-  const values = lyonData.map((d) => kpi.getValue(d));
+  const values = data.map((d) => kpi.getValue(d));
   const max = Math.max(...values);
   const min = Math.min(...values);
-  const maxMonth = lyonData[values.indexOf(max)].mois;
-  const minMonth = lyonData[values.indexOf(min)].mois;
+  const maxMonth = data[values.indexOf(max)].mois;
+  const minMonth = data[values.indexOf(min)].mois;
   const avg = Math.round(values.reduce((a, b) => a + b, 0) / values.length);
 
   return (
@@ -69,7 +68,6 @@ export default function KPIDetailModal({ kpi, open, onClose }: KPIDetailModalPro
           </div>
         </div>
 
-        {/* Chart */}
         <div className="h-64">
           <ResponsiveContainer width="100%" height="100%">
             {isCA ? (
@@ -99,7 +97,6 @@ export default function KPIDetailModal({ kpi, open, onClose }: KPIDetailModalPro
           </ResponsiveContainer>
         </div>
 
-        {/* Insights */}
         <div className="glass-card p-4 mt-2">
           <h4 className="font-display font-semibold text-sm mb-2">📊 Insights automatiques</h4>
           <ul className="space-y-1 text-sm text-muted-foreground">

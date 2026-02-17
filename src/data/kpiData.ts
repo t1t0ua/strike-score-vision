@@ -29,6 +29,51 @@ export const lyonData: MonthlyData[] = [
   { mois: "Décembre",  caBowling: 4800, caConso: 3000, caArcade: 1100, caBillard: 650, tauxOccupation: 85, panierMoyen: 34, partClubs: 32 },
 ];
 
+export const saintEtienneData: MonthlyData[] = [
+  { mois: "Janvier",   caBowling: 2100, caConso: 1200, caArcade: 400,  caBillard: 250, tauxOccupation: 60, panierMoyen: 19, partClubs: 18 },
+  { mois: "Février",   caBowling: 2200, caConso: 1300, caArcade: 420,  caBillard: 260, tauxOccupation: 63, panierMoyen: 20, partClubs: 19 },
+  { mois: "Mars",      caBowling: 2300, caConso: 1400, caArcade: 450,  caBillard: 280, tauxOccupation: 66, panierMoyen: 21, partClubs: 20 },
+  { mois: "Avril",     caBowling: 2400, caConso: 1500, caArcade: 480,  caBillard: 300, tauxOccupation: 68, panierMoyen: 22, partClubs: 21 },
+  { mois: "Mai",       caBowling: 2600, caConso: 1700, caArcade: 520,  caBillard: 320, tauxOccupation: 72, panierMoyen: 23, partClubs: 22 },
+  { mois: "Juin",      caBowling: 2700, caConso: 1800, caArcade: 550,  caBillard: 340, tauxOccupation: 75, panierMoyen: 24, partClubs: 23 },
+  { mois: "Juillet",   caBowling: 3000, caConso: 2000, caArcade: 650,  caBillard: 400, tauxOccupation: 82, panierMoyen: 18, partClubs: 17 },
+  { mois: "Août",      caBowling: 2900, caConso: 1900, caArcade: 620,  caBillard: 380, tauxOccupation: 80, panierMoyen: 17, partClubs: 16 },
+  { mois: "Septembre", caBowling: 2500, caConso: 1600, caArcade: 500,  caBillard: 310, tauxOccupation: 70, panierMoyen: 25, partClubs: 24 },
+  { mois: "Octobre",   caBowling: 2600, caConso: 1700, caArcade: 520,  caBillard: 330, tauxOccupation: 73, panierMoyen: 26, partClubs: 25 },
+  { mois: "Novembre",  caBowling: 2400, caConso: 1500, caArcade: 470,  caBillard: 290, tauxOccupation: 68, panierMoyen: 27, partClubs: 26 },
+  { mois: "Décembre",  caBowling: 3200, caConso: 2200, caArcade: 700,  caBillard: 420, tauxOccupation: 88, panierMoyen: 29, partClubs: 28 },
+];
+
+// Global = sum of both sites (averages for rates)
+export const globalData: MonthlyData[] = lyonData.map((lyon, i) => {
+  const se = saintEtienneData[i];
+  return {
+    mois: lyon.mois,
+    caBowling: lyon.caBowling + se.caBowling,
+    caConso: lyon.caConso + se.caConso,
+    caArcade: lyon.caArcade + se.caArcade,
+    caBillard: lyon.caBillard + se.caBillard,
+    tauxOccupation: Math.round((lyon.tauxOccupation + se.tauxOccupation) / 2),
+    panierMoyen: Math.round((lyon.panierMoyen + se.panierMoyen) / 2),
+    partClubs: Math.round((lyon.partClubs + se.partClubs) / 2),
+  };
+});
+
+export type SiteId = "lyon" | "saint-etienne" | "global";
+
+export interface SiteConfig {
+  id: SiteId;
+  label: string;
+  shortLabel: string;
+  data: MonthlyData[];
+}
+
+export const SITES: SiteConfig[] = [
+  { id: "lyon", label: "BowlingStar Lyon", shortLabel: "Lyon", data: lyonData },
+  { id: "saint-etienne", label: "BowlingStar Saint-Étienne", shortLabel: "St-Étienne", data: saintEtienneData },
+  { id: "global", label: "BowlingStar Global", shortLabel: "Global", data: globalData },
+];
+
 // Derived KPIs
 export function getLatestMonth() {
   return lyonData[lyonData.length - 1];
