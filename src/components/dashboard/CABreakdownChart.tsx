@@ -1,5 +1,5 @@
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from "recharts";
-import { lyonData, getCATotal } from "@/data/kpiData";
+import type { MonthlyData } from "@/data/kpiData";
 
 const COLORS = [
   "hsl(210 100% 56%)",
@@ -8,10 +8,12 @@ const COLORS = [
   "hsl(142 76% 46%)",
 ];
 
-const LABELS = ["Bowling", "Consommations", "Arcade", "Billard"];
+interface CABreakdownChartProps {
+  data: MonthlyData[];
+}
 
-export default function CABreakdownChart() {
-  const totals = lyonData.reduce(
+export default function CABreakdownChart({ data }: CABreakdownChartProps) {
+  const totals = data.reduce(
     (acc, d) => ({
       bowling: acc.bowling + d.caBowling,
       conso: acc.conso + d.caConso,
@@ -21,14 +23,14 @@ export default function CABreakdownChart() {
     { bowling: 0, conso: 0, arcade: 0, billard: 0 }
   );
 
-  const data = [
+  const pieData = [
     { name: "Bowling", value: totals.bowling },
     { name: "Consommations", value: totals.conso },
     { name: "Arcade", value: totals.arcade },
     { name: "Billard", value: totals.billard },
   ];
 
-  const total = data.reduce((s, d) => s + d.value, 0);
+  const total = pieData.reduce((s, d) => s + d.value, 0);
 
   return (
     <div className="glass-card p-5">
@@ -38,7 +40,7 @@ export default function CABreakdownChart() {
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
-                data={data}
+                data={pieData}
                 cx="50%"
                 cy="50%"
                 innerRadius={40}
@@ -46,7 +48,7 @@ export default function CABreakdownChart() {
                 paddingAngle={3}
                 dataKey="value"
               >
-                {data.map((_, i) => (
+                {pieData.map((_, i) => (
                   <Cell key={i} fill={COLORS[i]} />
                 ))}
               </Pie>
@@ -63,7 +65,7 @@ export default function CABreakdownChart() {
           </ResponsiveContainer>
         </div>
         <div className="flex-1 space-y-2">
-          {data.map((d, i) => (
+          {pieData.map((d, i) => (
             <div key={d.name} className="flex items-center justify-between text-sm">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: COLORS[i] }} />

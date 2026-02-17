@@ -1,11 +1,16 @@
 import { motion } from "framer-motion";
 import { TrendingUp, Users, Target, Coins } from "lucide-react";
-import { lyonData, getCATotal } from "@/data/kpiData";
+import { getCATotal } from "@/data/kpiData";
+import type { MonthlyData } from "@/data/kpiData";
 
-export default function SummaryCards() {
-  const latest = lyonData[lyonData.length - 1];
+interface SummaryCardsProps {
+  data: MonthlyData[];
+}
+
+export default function SummaryCards({ data }: SummaryCardsProps) {
+  const latest = data[data.length - 1];
   const caTotal = getCATotal(latest);
-  const caAnnuel = lyonData.reduce((s, d) => s + getCATotal(d), 0);
+  const caAnnuel = data.reduce((s, d) => s + getCATotal(d), 0);
 
   const cards = [
     {
