@@ -4,6 +4,7 @@ import { BarChart3, Target, MapPin, Calendar, ChevronDown } from "lucide-react";
 import ThemeToggle from "@/components/ThemeToggle";
 import { KPI_DEFINITIONS, OKR_DEFINITIONS, SITES } from "@/data/kpiData";
 import type { KPIDefinition, OKRDefinition, SiteId } from "@/data/kpiData";
+import PeriodSelector, { type Period, sliceByPeriod } from "@/components/dashboard/PeriodSelector";
 import KPICard from "@/components/dashboard/KPICard";
 import OKRCard from "@/components/dashboard/OKRCard";
 import KPIDetailModal from "@/components/dashboard/KPIDetailModal";
@@ -31,11 +32,13 @@ const Index = () => {
   const [selectedOKR, setSelectedOKR] = useState<OKRDefinition | null>(null);
   const [siteId, setSiteId] = useState<SiteId>("lyon");
   const [siteMenuOpen, setSiteMenuOpen] = useState(false);
+  const [period, setPeriod] = useState<Period>("1A");
 
   const site = SITES.find((s) => s.id === siteId)!;
   const siteData = site.data;
-  const latestData = siteData[siteData.length - 1];
-  const previousData = siteData[siteData.length - 2];
+  const filteredData = sliceByPeriod(siteData, period);
+  const latestData = filteredData[filteredData.length - 1];
+  const previousData = filteredData.length > 1 ? filteredData[filteredData.length - 2] : siteData[siteData.length - 2];
 
   return (
     <div className="min-h-screen bg-background">
@@ -102,7 +105,10 @@ const Index = () => {
               </button>
             ))}
           </nav>
-          <ThemeToggle />
+          <div className="flex items-center gap-2">
+            <PeriodSelector value={period} onChange={setPeriod} />
+            <ThemeToggle />
+          </div>
         </div>
       </header>
 
@@ -139,6 +145,7 @@ const Index = () => {
                     previousData={previousData}
                     onClick={() => setSelectedKPI(kpi)}
                     index={i}
+                    sparklineData={filteredData}
                   />
                 ))}
               </div>
@@ -178,6 +185,7 @@ const Index = () => {
                   previousData={previousData}
                   onClick={() => setSelectedKPI(kpi)}
                   index={i}
+                  sparklineData={filteredData}
                 />
               ))}
             </div>
