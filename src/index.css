@@ -60,6 +60,60 @@
     --sidebar-border: 214 20% 90%;
     --sidebar-ring: 210 100% 45%;
   }
+
+  .dark {
+    --background: 222 47% 6%;
+    --foreground: 210 40% 95%;
+
+    --card: 222 40% 10%;
+    --card-foreground: 210 40% 95%;
+
+    --popover: 222 40% 10%;
+    --popover-foreground: 210 40% 95%;
+
+    --primary: 210 100% 56%;
+    --primary-foreground: 222 47% 6%;
+
+    --secondary: 222 30% 16%;
+    --secondary-foreground: 210 40% 90%;
+
+    --muted: 222 30% 14%;
+    --muted-foreground: 215 20% 55%;
+
+    --accent: 32 95% 55%;
+    --accent-foreground: 222 47% 6%;
+
+    --destructive: 0 72% 51%;
+    --destructive-foreground: 210 40% 98%;
+
+    --success: 142 76% 46%;
+    --success-foreground: 222 47% 6%;
+
+    --warning: 38 92% 50%;
+    --warning-foreground: 222 47% 6%;
+
+    --border: 222 30% 18%;
+    --input: 222 30% 18%;
+    --ring: 210 100% 56%;
+
+    --chart-bowling: 210 100% 56%;
+    --chart-conso: 32 95% 55%;
+    --chart-arcade: 280 80% 60%;
+    --chart-billard: 142 76% 46%;
+
+    --glow-primary: 0 0 20px hsl(210 100% 56% / 0.3);
+    --glow-accent: 0 0 20px hsl(32 95% 55% / 0.3);
+    --glow-success: 0 0 20px hsl(142 76% 46% / 0.3);
+
+    --sidebar-background: 222 40% 8%;
+    --sidebar-foreground: 210 40% 90%;
+    --sidebar-primary: 210 100% 56%;
+    --sidebar-primary-foreground: 222 47% 6%;
+    --sidebar-accent: 222 30% 14%;
+    --sidebar-accent-foreground: 210 40% 90%;
+    --sidebar-border: 222 30% 18%;
+    --sidebar-ring: 210 100% 56%;
+  }
 }
 
 @layer base {
@@ -80,6 +134,10 @@
 @layer utilities {
   .glass-card {
     @apply bg-card/90 backdrop-blur-sm border border-border rounded-xl shadow-sm;
+  }
+
+  .dark .glass-card {
+    @apply bg-card/60 backdrop-blur-xl border-border/50 shadow-none;
   }
 
   .glow-primary {

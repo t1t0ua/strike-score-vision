@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
 import { BarChart3, Target, MapPin, Calendar, ChevronDown } from "lucide-react";
+import ThemeToggle from "@/components/ThemeToggle";
 import { KPI_DEFINITIONS, OKR_DEFINITIONS, SITES } from "@/data/kpiData";
 import type { KPIDefinition, OKRDefinition, SiteId } from "@/data/kpiData";
 import KPICard from "@/components/dashboard/KPICard";
@@ -101,6 +102,7 @@ const Index = () => {
               </button>
             ))}
           </nav>
+          <ThemeToggle />
         </div>
       </header>
 
